@@ -3,18 +3,19 @@ import { Route, useHistory, Switch } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
-import PopupWithForm from "./PopupWithForm";
-import ImagePopup from "./ImagePopup";
-import api from "../utils/api";
+import PopupWithForm from "../../utils/src/components/PopupWithForm";
+import ImagePopup from "../../place/src/components/ImagePopup";
+import placeApi from "../../place/src/utils/api"
+import profileApi from "../../profile/src/utils/api"
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
-import Register from "./Register";
-import Login from "./Login";
-import InfoTooltip from "./InfoTooltip";
+import EditProfilePopup from "../../profile/src/components/EditProfilePopup";
+import EditAvatarPopup from "../../profile/src/components/EditAvatarPopup";
+import AddPlacePopup from "../../place/src/components/AddPlacePopup";
+import Register from "../../auth/src/components/Register";
+import Login from "../../auth/src/components/Login";
+import InfoTooltip from "../../auth/src/components/InfoTooltip";
 import ProtectedRoute from "./ProtectedRoute";
-import * as auth from "../utils/auth.js";
+import * as auth from "../../auth/src/utils/auth.js";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -39,13 +40,8 @@ function App() {
 
   // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
   React.useEffect(() => {
-    api
-      .getAppInfo()
-      .then(([cardData, userData]) => {
-        setCurrentUser(userData);
-        setCards(cardData);
-      })
-      .catch((err) => console.log(err));
+    profileApi.getUserInfo().then((userData) => {setCurrentUser(userData)}).catch((err) => console.log(err));
+    placeApi.getCardList().then((cardData) => {setCards(cardData);}).catch((err) => console.log(err));
   }, []);
 
   // при монтировании App описан эффект, проверяющий наличие токена и его валидности
@@ -91,7 +87,7 @@ function App() {
   }
 
   function handleUpdateUser(userUpdate) {
-    api
+    profileApi
       .setUserInfo(userUpdate)
       .then((newUserData) => {
         setCurrentUser(newUserData);
@@ -101,7 +97,7 @@ function App() {
   }
 
   function handleUpdateAvatar(avatarUpdate) {
-    api
+    profileApi
       .setUserAvatar(avatarUpdate)
       .then((newUserData) => {
         setCurrentUser(newUserData);
@@ -112,7 +108,7 @@ function App() {
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    api
+    placeApi
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
         setCards((cards) =>
@@ -123,7 +119,7 @@ function App() {
   }
 
   function handleCardDelete(card) {
-    api
+    placeApi
       .removeCard(card._id)
       .then(() => {
         setCards((cards) => cards.filter((c) => c._id !== card._id));
@@ -132,7 +128,7 @@ function App() {
   }
 
   function handleAddPlaceSubmit(newCard) {
-    api
+    placeApi
       .addCard(newCard)
       .then((newCardFull) => {
         setCards([newCardFull, ...cards]);
