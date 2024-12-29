@@ -27,3 +27,7 @@ frontend/utils - **_shared_**
 
 При взаимодействии с нашей системой host при обращении на определённые урлы будет динамически подгружать необходимые модули из remote.  
 Общие вещи(шрифты, стили, общий код), которые шарятся между модулями, будут подгружаться из shared.
+
+# Task2
+
+https://drive.google.com/file/d/1ZYAjVonds_XWXdfbQmrZgA5vYsF9xRQA/view?usp=sharing
